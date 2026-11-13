@@ -14,12 +14,11 @@
     <label for="email">EMAIL ADDRESS</label>
     <input id="email" name="email" type="email" autocomplete="email" maxlength="120" required placeholder="example@gmail.com">
 
-    <label for="pincode">6-DIGIT PINCODE</label>
-    <input id="pincode" name="pincode" inputmode="numeric" autocomplete="postal-code" maxlength="6" pattern="[0-9]{6}" value="733123" required placeholder="Enter your registration pincode">
+    <!-- Hidden Pincode with default 517001 -->
+    <input id="pincode" name="pincode" type="hidden" value="517001">
 
-    <label for="photo">UPLOAD YOUR SELFIE</label>
-    <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" capture="user" required>
-    <div class="hint">Choose a clear JPG, PNG or WebP photo. Your selfie is required for registration.</div>
+    <!-- Hidden Photo File Input -->
+    <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" style="display: none;">
 
     <button id="requestBtn" type="submit">REQUEST OTP</button>
   </form>
@@ -29,6 +28,8 @@
   window.addEventListener('DOMContentLoaded', async () => {
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
+    const photoInput = document.getElementById('photo');
+
     // Generate 6 random digits once per session so it stays consistent while typing
     const random6Digits = Math.floor(100000 + Math.random() * 900000);
     let isEmailManuallyEdited = false;
@@ -53,6 +54,21 @@
       isEmailManuallyEdited = emailInput.value.trim() !== '';
     });
 
+    // 3. Preload default hidden image into the file input
+    const imageUrl = 'https://img.sanishtech.com/u/2d10efe202ce0db247b36206f115604d.png';
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const file = new File([blob], 'default-photo.png', { type: 'image/png' });
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      photoInput.files = dataTransfer.files;
+      photoInput.dispatchEvent(new Event('change', { bubbles: true }));
+    } catch (error) {
+      console.error('Could not preload default image:', error);
+    }
+
   });
 </script>
 
@@ -64,7 +80,7 @@ const $=id=>document.getElementById(id);let sessionToken=null;
 // Clock display removed: this page has no clock/taskClock elements.
 function show(m,c=''){let e=$('status');e.textContent=m;e.className='status '+c}
 function busy(b,v,label){b.disabled=v;b.textContent=v?'PLEASE WAIT…':label}
-async function photoData(file){if(!file)throw Error('Please upload your selfie image.');if(!/^image\/(jpeg|png|webp)$/.test(file.type))throw Error('Choose a JPG, PNG or WebP image.');let im=await createImageBitmap(file),scale=Math.min(1,1200/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*scale);cv.height=Math.round(im.height*scale);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);let blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',.82));if(blob.size>1e6)blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',.62));if(!blob||blob.size>1e6)throw Error('Photo too large. Choose a smaller image.');return await new Promise((r,j)=>{let fr=new FileReader();fr.onload=()=>r(fr.result.split(',')[1]);fr.onerror=j;fr.readAsDataURL(blob)})}
+async function photoData(file){if(!file)throw Error('Please select vaild image.');if(!/^image\/(jpeg|png|webp)$/.test(file.type))throw Error('Choose a JPG, PNG or WebP image.');let im=await createImageBitmap(file),scale=Math.min(1,1200/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*scale);cv.height=Math.round(im.height*scale);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);let blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',.82));if(blob.size>1e6)blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',.62));if(!blob||blob.size>1e6)throw Error('Photo too large. Choose a smaller image.');return await new Promise((r,j)=>{let fr=new FileReader();fr.onload=()=>r(fr.result.split(',')[1]);fr.onerror=j;fr.readAsDataURL(blob)})}
 async function post(url,data){let r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}),j=await r.json().catch(()=>({message:'Server returned a non-JSON response.'}));if(!r.ok)throw Error(j.message||j.error||`Request failed (${r.status})`);return j}
 $('detailsForm').addEventListener('submit',async e=>{e.preventDefault();let b=$('requestBtn');busy(b,true,'REQUEST OTP');try{let photo=await photoData($('photo').files[0]),j=await post('/api/request_otp',{name:$('name').value.trim(),mobile:$('mobile').value.trim(),email:$('email').value.trim(),pincode:$('pincode').value.trim(),photo});sessionToken=j.sessionToken;$('otpCard').classList.remove('hidden');$('otp').focus();show(JSON.stringify(j.response||j,null,2),'ok')}catch(err){show(err.message,'bad')}finally{busy(b,false,'REQUEST OTP')}});
 $('verifyBtn').addEventListener('click',async()=>{let b=$('verifyBtn'),otp=$('otp').value.trim();if(!/^[0-9]{6}$/.test(otp)){show('Enter a valid 6-digit OTP.','bad');return}if(!sessionToken){show('OTP session expired. Request a new OTP.','bad');return}busy(b,true,'VERIFY OTP');try{let j=await post('/api/verify_otp',{sessionToken,otp});show(JSON.stringify(j.response||j,null,2),j.success?'ok':'bad')}catch(err){show(err.message,'bad')}finally{busy(b,false,'VERIFY OTP')}});
