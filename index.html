@@ -5,9 +5,9 @@
 <section class="card"><h2>GOLD DROP REGISTRATION</h2><form id="detailsForm">
 <label for="name">Full name</label><input id="name" autocomplete="name" maxlength="80" required placeholder="Enter your real full name">
 <label for="mobile">Enter 10-digit mobile no.</label><input id="mobile" inputmode="numeric" autocomplete="tel-national" maxlength="10" pattern="[0-9]{10}" required placeholder="Enter mobile number">
-<label for="email">Email address</label><input id="email" type="email" autocomplete="email" maxlength="120" required placeholder="name@example.com">
+<label for="email">Email address</label><input id="email" type="email" autocomplete="email" maxlength="120" required placeholder="example@gmail.com" value="@gmail.com>
 <label for="pincode">Pincode</label><input id="pincode" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" required placeholder="6-digit pincode" value="517001">
-<label for="photo">Your selfie / registration photo</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" required><div class="hint">Upload your own clear photo. It is resized in your browser before upload.</div>
+<label for="photo">Select Photo</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp" required><div class="hint">Upload your own clear photo. It is resized in your browser before upload.</div>
 <button id="requestBtn" type="submit">REQUEST OTP</button></form></section>
 <section class="card hidden" id="otpCard"><h2>🔐 Verify OTP</h2><label for="otp">Enter 6-digit OTP</label><input id="otp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="Enter OTP received on your phone"><button id="verifyBtn">VERIFY OTP</button><button id="restartBtn" class="secondary" type="button">START OVER</button></section>
 <section class="card"><h2>SERVER RESPONSE</h2><div id="status" class="status">Waiting for registration details…</div></section>
