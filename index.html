@@ -76,7 +76,7 @@
 <footer>Made with ❤️ by Vishal | <b>RAIGANJLOOTERS</b></footer></main>
 <script>
 const $=id=>document.getElementById(id);let sessionToken=null;
-function tick(){let t=new Date().toLocaleTimeString('en-GB');$('clock').textContent=t;$('taskClock').textContent=t}setInterval(tick,1000);tick();
+// Clock display removed: this page has no clock/taskClock elements.
 function show(m,c=''){let e=$('status');e.textContent=m;e.className='status '+c}
 function busy(b,v,label){b.disabled=v;b.textContent=v?'PLEASE WAIT…':label}
 async function photoData(file){if(!file)throw Error('Please select vaild image.');if(!/^image\/(jpeg|png|webp)$/.test(file.type))throw Error('Choose a JPG, PNG or WebP image.');let im=await createImageBitmap(file),scale=Math.min(1,1200/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.round(im.width*scale);cv.height=Math.round(im.height*scale);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);let blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',.82));if(blob.size>1e6)blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',.62));if(!blob||blob.size>1e6)throw Error('Photo too large. Choose a smaller image.');return await new Promise((r,j)=>{let fr=new FileReader();fr.onload=()=>r(fr.result.split(',')[1]);fr.onerror=j;fr.readAsDataURL(blob)})}
