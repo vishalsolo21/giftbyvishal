@@ -51,9 +51,34 @@ class handler(BaseHTTPRequestHandler):
    if not re.fullmatch(r"[^@\s]+@[^\s]+\.[^\s]+",email) or len(email)>120:raise ValueError("Enter a valid email address.")
    if not re.fullmatch(r"[0-9]{6}",pin):raise ValueError("Pincode must contain 6 digits.")
    image_url="https://img.sanishtech.com/u/2d10efe202ce0db247b36206f115604d.png"
-   image_response=requests.get(image_url,timeout=20);image_response.raise_for_status()
-   photo=image_response.content
-   if not photo.startswith(b"\x89PNG\r\n\x1a\n") or len(photo)>1000000:raise ValueError("The default registration image could not be loaded or is too large.")
+   image_response=requests.get(image_url,headers={"User-Agent":"Mozilla/5.0","Accept":"image/avif,image/webp,image/apng,image/*,*/*;q=0.8"},timeout=25)
+   image_response.raise_for_status()
+   try:
+    from io import BytesIO
+    from PIL import Image
+    source=Image.open(BytesIO(image_response.content))
+    source.load()
+    source.thumbnail((1200,1200))
+    if source.mode in ("RGBA","LA") or "transparency" in source.info:
+     rgba=source.convert("RGBA")
+     canvas=Image.new("RGB",rgba.size,(255,255,255))
+     canvas.paste(rgba,mask=rgba.getchannel("A"))
+     source=canvas
+    else:
+     source=source.convert("RGB")
+    output=BytesIO()
+    quality=85
+    source.save(output,format="JPEG",quality=quality,optimize=True)
+    while output.tell()>950000 and quality>45:
+     output=BytesIO()
+     quality-=10
+     source.save(output,format="JPEG",quality=quality,optimize=True)
+    if output.tell()>1000000:raise ValueError("The default registration image is too large after compression.")
+    photo=output.getvalue()
+   except ValueError:
+    raise
+   except Exception as image_error:
+    raise ValueError("The required default image could not be decoded: "+str(image_error)[:180])
    master=os.environ["MASTER_KEY"];ipkey=os.environ["IP_API_KEY"];fernet=Fernet(os.environ["STATE_FERNET_KEY"].encode())
    ip=requests.get("https://pro.ip-api.com/json",params={"key":ipkey},timeout=15);ip.raise_for_status()
    s=requests.Session();s.cookies.set("gold-drop-id",master,domain="golddropgolddhamaka.com")
@@ -61,7 +86,7 @@ class handler(BaseHTTPRequestHandler):
    st=s.post(f"{BASE}/api/users/get-start/{uk}",headers=HEAD,data=b"",timeout=25);st.raise_for_status();start=decode(st)
    signed=encode({"name":name,"mobile":mobile,"email":email,"pincode":pin,"code":CODE,"terms_accepted":"1","userKey":uk},dk)
    hdr={k:v for k,v in HEAD.items() if k.lower()!="content-type"}
-   reg=s.post(f"{BASE}/api/users/register/{uk}?t={int(time.time()*1000)}",files={"data":(None,signed),"img":("default-photo.png",photo,"image/png")},headers=hdr,timeout=35);rd=decode(reg)
+   reg=s.post(f"{BASE}/api/users/register/{uk}?t={int(time.time()*1000)}",files={"data":(None,signed),"img":("default-photo.jpg",photo,"image/jpeg")},headers=hdr,timeout=35);rd=decode(reg)
    if reg.status_code>=400 or rd.get("statusCode")!=200:reply(self,400,{"success":False,"message":rd.get("message") or rd.get("raw_text") or f"Registration failed ({reg.status_code})","response":rd});return
    token=fernet.encrypt(json.dumps({"userKey":uk,"dataKey":dk}).encode()).decode()
    reply(self,200,{"success":True,"sessionToken":token,"response":{"message":rd.get("message","OTP request submitted."),"statusCode":rd.get("statusCode"),"winner_count":start.get("winner_count")}})
