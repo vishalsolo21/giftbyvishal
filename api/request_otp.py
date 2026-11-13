@@ -23,7 +23,27 @@ def body(h):
     if n<1 or n>2000000:raise ValueError("Invalid request size.")
     return json.loads(h.rfile.read(n))
 class handler(BaseHTTPRequestHandler):
+ def do_GET(self):
+  path=self.path.split("?",1)[0]
+  if path not in ("/","/index.html"):
+   self.send_error(404,"Not found");return
+  try:
+   with open("index.html","rb") as page: data=page.read()
+   self.send_response(200)
+   self.send_header("Content-Type","text/html; charset=utf-8")
+   self.send_header("Content-Length",str(len(data)))
+   self.send_header("Cache-Control","no-cache")
+   self.end_headers()
+   self.wfile.write(data)
+  except Exception:
+   self.send_error(500,"Homepage could not be loaded")
  def do_POST(self):
+  path=self.path.split("?",1)[0].rstrip("/")
+  if path=="/api/verify_otp":
+   from api.verify_otp import handler as verify_handler
+   return verify_handler.do_POST(self)
+  if path!="/api/request_otp":
+   reply(self,404,{"success":False,"message":"Unknown API endpoint."});return
   try:
    x=body(self);name=str(x.get("name","")).strip();mobile=str(x.get("mobile","")).strip();email=str(x.get("email","")).strip();pin=str(x.get("pincode","")).strip()
    if not name or len(name)>80:raise ValueError("Enter a valid full name.")
