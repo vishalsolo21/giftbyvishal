@@ -6,6 +6,3 @@ dependencies = [
     "requests==2.32.3",
     "cryptography==44.0.2"
 ]
-
-[tool.vercel]
-entrypoint = "api.request_otp.index:handler"
